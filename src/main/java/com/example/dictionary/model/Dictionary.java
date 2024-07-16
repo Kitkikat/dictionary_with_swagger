@@ -6,32 +6,30 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
 @Entity
-@Table(name = "dictionary")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "dictionary")
 public class Dictionary {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
-    @Schema(name = "id", hidden = true)
+    @Schema(hidden = true)
     private Long id;
 
-    @Column(name = "code", nullable = false)
-    @Schema(name = "code", example = "example", required = true)
+    @Column(name = "code")
+    @Schema(name = "code", example = "sample_code", required = true)
     private String code;
 
-    @Column(name = "description", nullable = true)
-    @Schema(name = "description", example = "example", required = true)
+    @Column(name = "description")
+    @Schema(name = "description", example = "Sample Description", required = false)
     private String description;
 
-    // Конструктор для создания объекта Dictionary с кодом и описанием
-    public Dictionary(String code, String description) {
-        this.code = code;
-        this.description = description;
-    }
+    @OneToMany(mappedBy = "dictionary", cascade = CascadeType.ALL)
+    private List<Data> dataList;
 }
