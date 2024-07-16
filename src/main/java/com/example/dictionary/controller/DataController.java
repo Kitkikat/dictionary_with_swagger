@@ -7,23 +7,20 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/data")
 @Tag(name = "Data", description = "Data management APIs")
+@AllArgsConstructor
 public class DataController {
 
     private final DataService dataService;
-
-    @Autowired
-    public DataController(DataService dataService) {
-        this.dataService = dataService;
-    }
 
     @Operation(summary = "Create new data")
     @ApiResponse(responseCode = "200", description = "Data created successfully")
@@ -37,26 +34,18 @@ public class DataController {
     @ApiResponse(responseCode = "200", description = "Found the data", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Data.class))})
     @ApiResponse(responseCode = "404", description = "Data not found")
     @GetMapping("/{id}")
-    public ResponseEntity<Data> getDataById(@PathVariable Long id) {
-        Data data = dataService.findDataById(id);
-        if (data != null) {
-            return ResponseEntity.ok(data);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Optional<Data>> getDataById(@PathVariable Long id) {
+        Optional<Data> data = dataService.findDataById(id);
+        return data.isPresent() ? ResponseEntity.ok(data) : ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Update data")
     @ApiResponse(responseCode = "200", description = "Data updated successfully")
     @ApiResponse(responseCode = "404", description = "Data not found")
     @PutMapping("/{id}")
-    public ResponseEntity<Data> updateData(@PathVariable Long id, @RequestBody Data data) {
-        Data updatedData = dataService.updateData(id, data);
-        if (updatedData != null) {
-            return ResponseEntity.ok(updatedData);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Optional<Data>> updateData(@PathVariable Long id, @RequestBody Data data) {
+        Optional<Data> updatedData = dataService.updateData(id, data);
+        return updatedData.isPresent() ? ResponseEntity.ok(updatedData) : ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Delete data")
@@ -64,16 +53,12 @@ public class DataController {
     @ApiResponse(responseCode = "404", description = "Data not found")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteData(@PathVariable Long id) {
-        Data deletedData = dataService.deleteData(id);
-        if (deletedData != null) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        boolean deleted = dataService.deleteData(id);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Get all data")
-    @ApiResponse(responseCode = "200", description = "List of data", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Data.class))})
+    @ApiResponse(responseCode = "200", description = "Found all data", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Data.class))})
     @GetMapping
     public ResponseEntity<List<Data>> getAllData() {
         List<Data> dataList = dataService.findAllData();
