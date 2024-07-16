@@ -13,5 +13,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+  springdoc:
+    swagger-ui:
+      path: /swagger-ui.html
