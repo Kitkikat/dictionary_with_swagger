@@ -6,13 +6,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class DictionaryService {
     private final DictionaryRepository dictionaryRepository;
 
-    public Dictionary findDictionaryById(Long id) {
+    public Dictionary findDictionaryById(UUID id) {
         return dictionaryRepository.findById(id).orElse(null);
     }
 
@@ -24,7 +25,7 @@ public class DictionaryService {
         return dictionaryRepository.save(dictionary);
     }
 
-    public Dictionary updateDictionary(Long id, Dictionary dictionary) {
+    public Dictionary updateDictionary(UUID id, Dictionary dictionary) {
         Dictionary existingDictionary = dictionaryRepository.findById(id).orElse(null);
         if (existingDictionary != null) {
             existingDictionary.setCode(dictionary.getCode());
@@ -34,7 +35,7 @@ public class DictionaryService {
         return null;
     }
 
-    public boolean deleteDictionary(Long id) {
+    public boolean deleteDictionary(UUID id) {
         Dictionary dictionary = dictionaryRepository.findById(id).orElse(null);
         if (dictionary != null) {
             dictionaryRepository.delete(dictionary);
