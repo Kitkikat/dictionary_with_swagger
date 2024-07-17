@@ -14,11 +14,13 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
+                  type: UUID
+                  autoIncrement: true
+
                   constraints:
                     primaryKey: true
                     nullable: false
-                    autoIncrement: true
+
               - column:
                   name: code
                   type: varchar(50)
@@ -45,14 +47,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
+                  type: UUID
+                  autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false
-                    autoIncrement: true
               - column:
                   name: dictionary_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: false
                     foreignKeyName: fk_dictionary_id
