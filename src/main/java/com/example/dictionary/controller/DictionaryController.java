@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/dictionary")
@@ -54,7 +55,7 @@ public class DictionaryController {
     @ApiResponse(responseCode = "200", description = "Found the dictionary", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Dictionary.class), examples = @ExampleObject(value = "{ \"id\": 1, \"code\": \"sample_code\", \"description\": \"Sample Description\" }")))
     @ApiResponse(responseCode = "404", description = "Dictionary not found")
     @GetMapping("/{id}")
-    public ResponseEntity<Dictionary> getDictionaryById(@PathVariable Long id) {
+    public ResponseEntity<Dictionary> getDictionaryById(@PathVariable UUID id) {
         try {
             Dictionary dictionary = dictionaryService.findDictionaryById(id);
             return dictionary != null ? ResponseEntity.ok(dictionary) : ResponseEntity.notFound().build();
@@ -80,7 +81,7 @@ public class DictionaryController {
     @ApiResponse(responseCode = "200", description = "Dictionary updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Dictionary.class)))
     @ApiResponse(responseCode = "404", description = "Dictionary not found")
     @PutMapping("/{id}")
-    public ResponseEntity<Dictionary> updateDictionary(@PathVariable Long id, @RequestBody Dictionary dictionary) {
+    public ResponseEntity<Dictionary> updateDictionary(@PathVariable UUID id, @RequestBody Dictionary dictionary) {
         try {
             Dictionary updatedDictionary = dictionaryService.updateDictionary(id, dictionary);
             return updatedDictionary != null ? ResponseEntity.ok(updatedDictionary) : ResponseEntity.notFound().build();
@@ -93,7 +94,7 @@ public class DictionaryController {
     @ApiResponse(responseCode = "204", description = "Dictionary deleted successfully")
     @ApiResponse(responseCode = "404", description = "Dictionary not found")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDictionary(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteDictionary(@PathVariable UUID id) {
         try {
             boolean deleted = dictionaryService.deleteDictionary(id);
             return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
