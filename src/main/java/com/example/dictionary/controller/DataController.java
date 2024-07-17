@@ -1,9 +1,7 @@
 package com.example.dictionary.controller;
 
 import com.example.dictionary.model.Data;
-import com.example.dictionary.model.Dictionary;
 import com.example.dictionary.service.DataService;
-import com.example.dictionary.service.DictionaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -24,11 +22,9 @@ import java.util.UUID;
 public class DataController {
 
     private final DataService dataService;
-    private final DictionaryService dictionaryService;
 
-    public DataController(DataService dataService, DictionaryService dictionaryService) {
+    public DataController(DataService dataService) {
         this.dataService = dataService;
-        this.dictionaryService = dictionaryService;
     }
 
     @Operation(summary = "Create new data",
@@ -49,13 +45,6 @@ public class DataController {
     @PostMapping
     public ResponseEntity<Data> createData(@RequestBody Data data) {
         try {
-            // Check if the dictionary exists, if not create a new one
-            Dictionary dictionary = dictionaryService.findDictionaryById(data.getDictionary().getId());
-            if (dictionary == null) {
-                dictionary = dictionaryService.saveDictionary(data.getDictionary());
-            }
-            data.setDictionary(dictionary);
-
             Data savedData = dataService.saveData(data);
             return ResponseEntity.ok(savedData);
         } catch (Exception e) {
