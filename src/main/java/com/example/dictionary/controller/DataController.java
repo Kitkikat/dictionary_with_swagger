@@ -1,7 +1,9 @@
 package com.example.dictionary.controller;
 
 import com.example.dictionary.model.Data;
+import com.example.dictionary.model.Dictionary;
 import com.example.dictionary.service.DataService;
+import com.example.dictionary.service.DictionaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/data")
@@ -21,9 +24,11 @@ import java.util.Optional;
 public class DataController {
 
     private final DataService dataService;
+    private final DictionaryService dictionaryService;
 
-    public DataController(DataService dataService) {
+    public DataController(DataService dataService, DictionaryService dictionaryService) {
         this.dataService = dataService;
+        this.dictionaryService = dictionaryService;
     }
 
     @Operation(summary = "Create new data",
@@ -44,6 +49,13 @@ public class DataController {
     @PostMapping
     public ResponseEntity<Data> createData(@RequestBody Data data) {
         try {
+            // Check if the dictionary exists, if not create a new one
+            Dictionary dictionary = dictionaryService.findDictionaryById(data.getDictionary().getId());
+            if (dictionary == null) {
+                dictionary = dictionaryService.saveDictionary(data.getDictionary());
+            }
+            data.setDictionary(dictionary);
+
             Data savedData = dataService.saveData(data);
             return ResponseEntity.ok(savedData);
         } catch (Exception e) {
@@ -55,7 +67,7 @@ public class DataController {
     @ApiResponse(responseCode = "200", description = "Found the data", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Data.class), examples = @ExampleObject(value = "{ \"id\": 1, \"dictionary\": { \"id\": 1 }, \"code\": \"test\", \"value\": \"example value\" }")))
     @ApiResponse(responseCode = "404", description = "Data not found")
     @GetMapping("/{id}")
-    public ResponseEntity<Data> getDataById(@PathVariable Long id) {
+    public ResponseEntity<Data> getDataById(@PathVariable UUID id) {
         try {
             Optional<Data> data = dataService.findDataById(id);
             return data.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
@@ -81,7 +93,7 @@ public class DataController {
     @ApiResponse(responseCode = "200", description = "Data updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Data.class)))
     @ApiResponse(responseCode = "404", description = "Data not found")
     @PutMapping("/{id}")
-    public ResponseEntity<Data> updateData(@PathVariable Long id, @RequestBody Data data) {
+    public ResponseEntity<Data> updateData(@PathVariable UUID id, @RequestBody Data data) {
         try {
             Optional<Data> updatedData = dataService.updateData(id, data);
             return updatedData.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
@@ -94,7 +106,7 @@ public class DataController {
     @ApiResponse(responseCode = "204", description = "Data deleted successfully")
     @ApiResponse(responseCode = "404", description = "Data not found")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteData(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteData(@PathVariable UUID id) {
         try {
             boolean deleted = dataService.deleteData(id);
             return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
