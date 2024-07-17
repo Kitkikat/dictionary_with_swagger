@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -20,7 +22,7 @@ public class Dictionary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     @Schema(hidden = true)
-    private Long id;
+    private UUID id;
 
     @Column(name = "code")
     @Schema(name = "code", example = "sample_code", required = true)
@@ -32,4 +34,5 @@ public class Dictionary {
 
     @OneToMany(mappedBy = "dictionary", cascade = CascadeType.ALL)
     private List<Data> dataList;
+
 }
